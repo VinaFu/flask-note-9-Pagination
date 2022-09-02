@@ -1,5 +1,7 @@
 # flask-note-9-Pagination
 内容+图片太多，用分页减少内存压力
+这一章内容：
+分页 —— 页码 —— 个人post主页
 
 1.routes.py/ home
   首先，把json数据放进原有的结构中，创建好多个posts
@@ -91,20 +93,20 @@
  3.  页数设计
  home.html
  
-        {% for post in posts.items %}改完分页，顺便在这里也改一下
+          {% for post in posts.items %}改完分页，顺便在这里也改一下
 
-        {% endfor %}
-        {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}  左右各留多少页书
-          {% if page_num%}
-            {% if posts.page == page_num %}     如果是当前页面，则变成实心按钮
-              <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
-            {% else %}      否则是空心蓝色默认按钮
-              <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+          {% endfor %}
+          {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}  左右各留多少页书
+            {% if page_num%}
+              {% if posts.page == page_num %}     如果是当前页面，则变成实心按钮
+                <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+              {% else %}      否则是空心蓝色默认按钮
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+              {% endif %}
+            {% else %}      要不然就是省略号代替
+              ...
             {% endif %}
-          {% else %}      要不然就是省略号代替
-            ...
-          {% endif %}
-        {% endfor %}
+          {% endfor %}
 
 4. 新旧展示顺序
 home.html加一个用顺序过滤
