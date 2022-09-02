@@ -15,6 +15,14 @@
           db.session.add(post)
       db.session.commit()
       # end new dummy json crying 
+      
+              ⬆️⬆️⬆️
+      ///////// 有问题  ////////（补一下json的添加+删除）
+      
+      page=request.args.get('page',1, type=int)
+      posts = Post.query.paginate(page=page, per_page=2)
+      
+      设置分页，具体操作+原理见下一个section：
   
 2. 在terminal里面看一下pagination的用法：
     
@@ -80,4 +88,21 @@
               74
               >>> 
     
- 3.    
+ 3.  页数设计
+ home.html
+        {% for post in posts.items %}改完分页，顺便在这里也改一下
+
+        {% endfor %}
+        {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}  左右各留多少页书
+          {% if page_num%}
+            {% if posts.page == page_num %}     如果是当前页面，则变成实心按钮
+              <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+            {% else %}      否则是空心蓝色默认按钮
+              <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+            {% endif %}
+          {% else %}      要不然就是省略号代替
+            ...
+          {% endif %}
+        {% endfor %}
+
+4. 新旧展示顺序
