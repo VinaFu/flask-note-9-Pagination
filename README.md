@@ -90,6 +90,7 @@
     
  3.  页数设计
  home.html
+ 
         {% for post in posts.items %}改完分页，顺便在这里也改一下
 
         {% endfor %}
@@ -106,3 +107,41 @@
         {% endfor %}
 
 4. 新旧展示顺序
+home.html加一个用顺序过滤
+
+        posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=10)
+        
+
+5. 点击用户，进入他自己的所有posts
+
+      5.1 建一个新的路径：
+      
+        @app.route("/user/<string:username>")
+        def user_posts(username):
+            page=request.args.get('page',1, type=int)
+            user = User.query.filter_by(username=username).first_or_404() 把用户名打上去
+            posts = Post.query.filter_by(author=user)\    通过名字筛选
+                .order_by(Post.date_posted.desc())\     倒序
+                .paginate(page=page, per_page=10)     分页
+            return render_template('user_posts.html', posts=posts, user=user)
+ 
+      5.2 页面内部和home很像：
+      用户界面基本和home一样，但是有几个地方需要修改：
+      
+        {% extends "layout.html" %}
+        {% block content %}
+            <h1 class="mb-3">Posts by {{ user.username }}({{ posts.total }})</h1> 加了一个标题，用户名+数量
+            {% for post in posts.items %}
+            <article class="media content-section">
+              <img src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}" class="rounded-circle article-img">
+                <div class="media-body">
+                  <!-- <div class="article-metadata"> -->
+                    <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>                这里，引用引的是名字，导航也是这一页。 在/home + /post 见面也都要修改
+                    <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                  <!-- </div> -->
+                  <h2><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
+                  <p class="article-content">{{ post.content }}</p>
+                </div>
+            </article>
+            {% endfor %}
+        
